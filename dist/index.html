@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#17130f" />
+  <meta name="description" content="A playable browser instrument inspired by a compact 1980s home keyboard, with computer keyboard and Web MIDI support." />
+  <title>CT-35 Browser Keyboard</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2317130f'/%3E%3Crect x='8' y='16' width='48' height='34' rx='4' fill='%23eee4cd'/%3E%3Cpath d='M13 20h38v25H13z' fill='%23fffaf0'/%3E%3Cpath d='M20 20v16m10-16v16m10-16v16' stroke='%2317130f' stroke-width='6'/%3E%3C/svg%3E" />
+  <style>
+    :root{--cream:#e7dcc3;--cream-hi:#f5eddc;--ink:#24201a;--orange:#d85d2a;--gold:#d99a32;--red:#d72c2c;--shadow:#0c0907;--wood:#241810}
+    *{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#17130f;color:var(--ink);font-family:"Arial Narrow",Arial,sans-serif}button,input{font:inherit}
+    body{background:radial-gradient(circle at 50% 0,#5b4935 0,transparent 50%),linear-gradient(135deg,#1b120d,#342317 45%,#160f0b)}
+    .app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);padding:clamp(8px,1.8vw,24px);gap:10px}
+    .topline{display:flex;align-items:center;justify-content:space-between;color:#eadfc9;font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:0 3px}
+    .status{display:flex;align-items:center;gap:8px}.led{width:7px;height:7px;border-radius:50%;background:#7a1d17;box-shadow:0 0 0 1px #120b08}.led.on{background:#ff3b31;box-shadow:0 0 10px #ff3026}
+    .utility{display:flex;gap:8px}.utility button{border:1px solid #736452;color:#eadfc9;background:#211914;border-radius:3px;padding:7px 10px;cursor:pointer;text-transform:uppercase;font-size:11px;letter-spacing:.08em}.utility button:hover,.utility button:focus-visible{background:#38291f;outline:1px solid #d99a32}
+    .instrument{min-height:0;border-radius:8px 8px 13px 13px;background:linear-gradient(#f1e8d5,#d8cbae);box-shadow:0 24px 70px #000b,0 4px 0 #9c8e73,inset 0 1px #fff;display:grid;grid-template-rows:minmax(150px,31%) minmax(0,1fr);overflow:hidden;border:1px solid #b6aa92;position:relative}
+    .control-panel{display:grid;grid-template-columns:minmax(145px,1.1fr) minmax(390px,3fr) minmax(145px,1fr);gap:clamp(8px,1.2vw,18px);padding:clamp(10px,1.5vw,20px);border-bottom:8px solid #b9aa8e;background:linear-gradient(180deg,#f7efde 0%,#e1d6bd 86%,#b8a88b 100%)}
+    .brand{display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid #aca188;padding-right:16px}.logo{font-weight:900;font-style:italic;font-size:clamp(24px,3vw,52px);letter-spacing:-.08em}.model{font-size:clamp(12px,1.3vw,18px);color:#60594f}.model b{font-weight:800;color:#39332d}
+    .speaker{height:62px;border-radius:2px;background:repeating-linear-gradient(0deg,#877e6b 0 2px,transparent 2px 5px);opacity:.75}
+    .controls{display:grid;grid-template-rows:auto 1fr;gap:11px}.sliders{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.slider label,.control-group legend{font-size:10px;text-transform:uppercase;letter-spacing:.09em;font-weight:700}.slider input{width:100%;accent-color:#493d31}
+    .button-banks{display:grid;grid-template-columns:1.1fr 1.5fr;gap:18px}.control-group{border:0;margin:0;padding:0;min-width:0}.bank{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:7px}.bank.tones{grid-template-columns:repeat(6,minmax(0,1fr))}.chiclet{min-height:38px;border:0;border-radius:2px;background:linear-gradient(#f0ac49,#d37a27);box-shadow:0 3px 0 #8d4d18,0 4px 4px #5c421f55;color:#30231a;font-weight:800;font-size:clamp(8px,.75vw,11px);text-transform:uppercase;cursor:pointer;padding:4px}.chiclet.active{transform:translateY(2px);box-shadow:0 1px 0 #7d4418;background:linear-gradient(#ffcb68,#e96e2d)}
+    .master{display:flex;flex-direction:column;justify-content:space-between;border-left:1px solid #aca188;padding-left:16px}.master .row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px;text-transform:uppercase;font-weight:700}.power{width:52px;height:26px;background:#25211d;border:3px solid #5d5347;position:relative;cursor:pointer}.power:after{content:"";position:absolute;inset:2px auto 2px 3px;width:19px;background:#df5a2d;transition:.2s}.power.on:after{transform:translateX(21px);background:#d8332a}.readout{padding:10px 8px;background:#24231d;color:#f98b42;font:700 14px monospace;text-align:center;box-shadow:inset 0 0 8px #000;border:2px solid #817461;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .keyboard{position:relative;display:flex;align-items:stretch;padding:0 clamp(6px,1vw,14px) clamp(8px,1vw,14px);background:linear-gradient(180deg,#8e8069 0 7px,#d9cdb4 7px 100%);touch-action:none;user-select:none}
+    .key{position:relative;border:1px solid #5f5549;border-top:0;cursor:pointer;transition:background .035s,transform .035s}.key.white{flex:1;background:linear-gradient(90deg,#d8d1c3 0,#fffaf0 13%,#f8f1e3 77%,#c9c0af 100%);border-radius:0 0 4px 4px;box-shadow:inset 0 -5px 0 #cbc0ae,0 4px 4px #0005;z-index:1}.key.white.active{background:linear-gradient(#f0b75e,#ffc66e);transform:translateY(3px);box-shadow:inset 0 -2px #b87527}.key.black{position:absolute;top:0;height:59%;width:clamp(21px,2.75%,45px);background:linear-gradient(90deg,#0d0c0b,#302e2a 60%,#090908);border-radius:0 0 3px 3px;box-shadow:inset 0 -6px 3px #000,2px 4px 4px #0008;z-index:3}.key.black.active{background:linear-gradient(#6b321d,#d0612b);transform:translateY(3px)}
+    .key-label{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font:700 clamp(9px,1vw,14px) monospace;color:#817667}.black .key-label{bottom:8px;color:#d9c7a9;font-size:10px}.note-label{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);font:700 9px monospace;color:#b0a493}.black .note-label{display:none}
+    .start-overlay{position:fixed;inset:0;background:#100c09dc;backdrop-filter:blur(7px);z-index:20;display:grid;place-items:center;transition:.3s}.start-overlay.hidden{opacity:0;pointer-events:none}.start-card{width:min(480px,90vw);text-align:center;color:#f4ead7}.start-card .mini-logo{font-size:clamp(42px,8vw,78px);font-weight:900;font-style:italic;letter-spacing:-.09em}.start-card p{color:#bfb09a;line-height:1.5;margin:12px auto 24px;max-width:36ch}.start-card button{border:0;background:#dc6630;color:#21160f;font-weight:900;text-transform:uppercase;letter-spacing:.11em;padding:15px 24px;box-shadow:0 5px 0 #843516;cursor:pointer}.start-card small{display:block;margin-top:18px;color:#847665}
+    @media(max-width:850px){.app{padding:6px}.instrument{grid-template-rows:185px minmax(0,1fr)}.control-panel{grid-template-columns:105px 1fr 90px;padding:10px;gap:9px}.speaker{height:45px}.button-banks{grid-template-columns:1fr}.button-banks fieldset:first-child{display:none}.bank.tones{grid-template-columns:repeat(3,1fr)}.sliders{gap:7px}.chiclet{min-height:30px}.master{padding-left:8px}.readout{font-size:10px}.key-label{font-size:9px}.note-label{display:none}.logo{font-size:26px}}
+    @media(max-width:560px){.topline{display:none}.app{grid-template-rows:1fr}.instrument{grid-template-rows:155px 1fr}.control-panel{grid-template-columns:75px 1fr 68px}.speaker,.model{display:none}.brand{justify-content:center}.logo{font-size:21px}.sliders{grid-template-columns:1fr}.slider:not(:first-child){display:none}.bank.tones{grid-template-columns:repeat(3,1fr)}.chiclet{font-size:7px}.master .row:first-child{display:none}.readout{padding:6px 3px;writing-mode:vertical-rl;height:90px;margin:auto}.key-label{display:none}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topline"><div class="status"><span id="midiLed" class="led"></span><span id="midiStatus">MIDI: searching</span></div><div class="utility"><button id="labelsBtn" aria-pressed="true">Labels on</button><button id="fullscreenBtn">Full screen</button></div></header>
+    <section class="instrument" aria-label="Playable digital keyboard">
+      <div class="control-panel">
+        <div class="brand"><div class="logo">CASIO</div><div class="speaker" aria-hidden="true"></div><div class="model">Casiotone <b>CT-35</b></div></div>
+        <div class="controls">
+          <div class="sliders">
+            <div class="slider"><label for="volume">Accomp. volume</label><input id="volume" type="range" min="0" max="100" value="72"></div>
+            <div class="slider"><label for="tempo">Tempo</label><input id="tempo" type="range" min="55" max="190" value="104"></div>
+            <div class="slider"><label for="sustain">Sustain</label><input id="sustain" type="range" min="5" max="180" value="45"></div>
+          </div>
+          <div class="button-banks">
+            <fieldset class="control-group"><legend>Rhythm</legend><div class="bank" id="rhythms"><button class="chiclet active" data-rhythm="off">Off</button><button class="chiclet" data-rhythm="rock">Rock</button><button class="chiclet" data-rhythm="swing">Swing</button><button class="chiclet" data-rhythm="bossanova">Bossa</button></div></fieldset>
+            <fieldset class="control-group"><legend>Tone</legend><div class="bank tones" id="tones"><button class="chiclet active" data-tone="piano">Piano</button><button class="chiclet" data-tone="epiano">Elec. piano</button><button class="chiclet" data-tone="organ">Organ</button><button class="chiclet" data-tone="oboe">Oboe</button><button class="chiclet" data-tone="clarinet">Clarinet</button><button class="chiclet" data-tone="vibes">Vibraphone</button></div></fieldset>
+          </div>
+        </div>
+        <div class="master"><div class="row"><span>Main volume</span><span class="led on"></span></div><div id="readout" class="readout">PIANO · C4</div><div class="row"><span>Off</span><button id="power" class="power on" aria-label="Power" aria-pressed="true"></button><span>On</span></div></div>
+      </div>
+      <div id="keyboard" class="keyboard" aria-label="Piano keyboard"></div>
+    </section>
+  </main>
+  <div id="startOverlay" class="start-overlay"><div class="start-card"><div class="mini-logo">CASIO</div><p>A pocket-sized home keyboard, rebuilt for your browser. Play with your computer keyboard, pointer, or a connected MIDI controller.</p><button id="startBtn">Power on</button><small>Computer keys: Z–M and Q–U · MIDI connects automatically</small></div></div>
+  <script>
+  (()=>{
+    const keyboard=document.querySelector('#keyboard'),readout=document.querySelector('#readout'),overlay=document.querySelector('#startOverlay');
+    const midiLed=document.querySelector('#midiLed'),midiStatus=document.querySelector('#midiStatus');
+    const keyMap=['z','s','x','d','c','v','g','b','h','n','j','m',',','l','.',';','/','q','2','w','3','e','r','5','t','6','y','7','u'];
+    const noteNames=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+    const blackSet=new Set([1,3,6,8,10]); let audioCtx,master,compressor,currentTone='piano',powered=true,sustain=.45,active=new Map(),rhythmTimer=null,beat=0;
+    const startMidi=48,endMidi=76,whiteNotes=[];
+    for(let m=startMidi;m<=endMidi;m++) if(!blackSet.has(m%12)) whiteNotes.push(m);
+    const noteName=m=>noteNames[m%12]+(Math.floor(m/12)-1); const freq=m=>440*Math.pow(2,(m-69)/12);
+    function buildKeyboard(){
+      keyboard.innerHTML=''; const totalWhite=whiteNotes.length;
+      for(const m of whiteNotes){const k=document.createElement('button');k.className='key white';k.dataset.midi=m;k.setAttribute('aria-label',noteName(m));k.innerHTML=`<span class="note-label">${noteName(m)}</span><span class="key-label">${keyMap[m-startMidi]?.toUpperCase()||''}</span>`;keyboard.appendChild(k)}
+      for(let m=startMidi;m<=endMidi;m++){if(!blackSet.has(m%12))continue;const prevWhites=whiteNotes.filter(n=>n<m).length;const k=document.createElement('button');k.className='key black';k.dataset.midi=m;k.setAttribute('aria-label',noteName(m));k.style.left=`calc(${prevWhites/totalWhite*100}% - clamp(10.5px,1.375%,22.5px))`;k.innerHTML=`<span class="key-label">${keyMap[m-startMidi]?.toUpperCase()||''}</span>`;keyboard.appendChild(k)}
+    }
+    function initAudio(){if(audioCtx){audioCtx.resume();return}audioCtx=new (window.AudioContext||window.webkitAudioContext)();master=audioCtx.createGain();compressor=audioCtx.createDynamicsCompressor();master.gain.value=.55;master.connect(compressor).connect(audioCtx.destination)}
+    const toneSpec={piano:['triangle',.006,.7,.65],epiano:['sine',.012,1.3,.5],organ:['square',.025,.95,.16],oboe:['sawtooth',.04,.7,.3],clarinet:['square',.035,.75,.26],vibes:['sine',.004,1.65,.58]};
+    function noteOn(m,velocity=100){if(!powered||active.has(m))return;initAudio();const now=audioCtx.currentTime,[wave,attack,decay,gainVal]=toneSpec[currentTone];const osc=audioCtx.createOscillator(),gain=audioCtx.createGain(),filter=audioCtx.createBiquadFilter();osc.type=wave;osc.frequency.value=freq(m);filter.type='lowpass';filter.frequency.value=currentTone==='organ'?2400:4200;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(gainVal*(velocity/127),now+attack);gain.gain.exponentialRampToValueAtTime(gainVal*.48,now+decay);osc.connect(filter).connect(gain).connect(master);osc.start();active.set(m,{osc,gain});setKey(m,true);readout.textContent=`${currentTone.toUpperCase()} · ${noteName(m)}`}
+    function noteOff(m){const v=active.get(m);if(!v)return;const now=audioCtx.currentTime;v.gain.gain.cancelScheduledValues(now);v.gain.gain.setTargetAtTime(.0001,now,Math.max(.02,sustain/3));v.osc.stop(now+sustain+.12);active.delete(m);setKey(m,false)}
+    function setKey(m,on){keyboard.querySelector(`[data-midi="${m}"]`)?.classList.toggle('active',on)}
+    function releaseAll(){[...active.keys()].forEach(noteOff)}
+    function clickKey(e){const key=e.target.closest('.key');if(!key)return;e.preventDefault();noteOn(+key.dataset.midi,110);key.setPointerCapture?.(e.pointerId)}
+    keyboard.addEventListener('pointerdown',clickKey);keyboard.addEventListener('pointerup',e=>{const k=e.target.closest('.key');if(k)noteOff(+k.dataset.midi)});keyboard.addEventListener('pointercancel',releaseAll);keyboard.addEventListener('pointerleave',e=>{if(e.buttons)releaseAll()});
+    window.addEventListener('keydown',e=>{if(e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;const i=keyMap.indexOf(e.key.toLowerCase());if(i>=0){e.preventDefault();noteOn(startMidi+i,105)}});window.addEventListener('keyup',e=>{const i=keyMap.indexOf(e.key.toLowerCase());if(i>=0)noteOff(startMidi+i)});window.addEventListener('blur',releaseAll);
+    document.querySelector('#tones').addEventListener('click',e=>{const b=e.target.closest('[data-tone]');if(!b)return;currentTone=b.dataset.tone;document.querySelectorAll('[data-tone]').forEach(x=>x.classList.toggle('active',x===b));readout.textContent=currentTone.toUpperCase()});
+    function drum(kind,step){if(!audioCtx)return;const now=audioCtx.currentTime;if(step%4===0){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.setValueAtTime(130,now);o.frequency.exponentialRampToValueAtTime(45,now+.1);g.gain.setValueAtTime(.35,now);g.gain.exponentialRampToValueAtTime(.001,now+.13);o.connect(g).connect(master);o.start();o.stop(now+.14)}if(step%2===1||kind==='swing'&&step===2){const len=audioCtx.sampleRate*.045,b=audioCtx.createBuffer(1,len,audioCtx.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;const s=audioCtx.createBufferSource(),f=audioCtx.createBiquadFilter(),g=audioCtx.createGain();s.buffer=b;f.type='highpass';f.frequency.value=5000;g.gain.setValueAtTime(.09,now);g.gain.exponentialRampToValueAtTime(.001,now+.05);s.connect(f).connect(g).connect(master);s.start()}}
+    function setRhythm(kind){clearInterval(rhythmTimer);rhythmTimer=null;beat=0;if(kind==='off')return;initAudio();const tick=()=>{drum(kind,beat%8);beat++};tick();rhythmTimer=setInterval(tick,60000/(+document.querySelector('#tempo').value*2))}
+    document.querySelector('#rhythms').addEventListener('click',e=>{const b=e.target.closest('[data-rhythm]');if(!b)return;document.querySelectorAll('[data-rhythm]').forEach(x=>x.classList.toggle('active',x===b));setRhythm(b.dataset.rhythm)});
+    document.querySelector('#volume').addEventListener('input',e=>{if(master)master.gain.value=e.target.value/130});document.querySelector('#sustain').addEventListener('input',e=>sustain=e.target.value/100);document.querySelector('#tempo').addEventListener('change',()=>{const b=document.querySelector('[data-rhythm].active');setRhythm(b.dataset.rhythm)});
+    document.querySelector('#power').addEventListener('click',e=>{powered=!powered;e.currentTarget.classList.toggle('on',powered);e.currentTarget.setAttribute('aria-pressed',powered);if(!powered)releaseAll();else initAudio()});
+    document.querySelector('#startBtn').addEventListener('click',()=>{initAudio();overlay.classList.add('hidden')});
+    document.querySelector('#fullscreenBtn').addEventListener('click',()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen());
+    document.querySelector('#labelsBtn').addEventListener('click',e=>{const hidden=document.body.classList.toggle('hide-labels');document.querySelectorAll('.key-label').forEach(x=>x.style.display=hidden?'none':'');e.currentTarget.textContent=hidden?'Labels off':'Labels on';e.currentTarget.setAttribute('aria-pressed',String(!hidden))});
+    async function midi(){if(!navigator.requestMIDIAccess){midiStatus.textContent='MIDI: unsupported';return}try{const access=await navigator.requestMIDIAccess();const bind=()=>{access.inputs.forEach(input=>input.onmidimessage=ev=>{const [cmd,n,v]=ev.data;if((cmd&0xf0)===0x90&&v>0)noteOn(n,v);else if((cmd&0xf0)===0x80||((cmd&0xf0)===0x90&&v===0))noteOff(n)});const count=access.inputs.size;midiLed.classList.toggle('on',count>0);midiStatus.textContent=count?`MIDI: ${[...access.inputs.values()][0].name}`:'MIDI: ready — connect device'};bind();access.onstatechange=bind}catch{midiStatus.textContent='MIDI: permission needed'}}
+    buildKeyboard();midi();
+  })();
+  </script>
+</body>
+</html>
