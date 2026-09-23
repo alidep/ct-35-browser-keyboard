@@ -29,6 +29,33 @@
     @media(max-width:850px){.app{padding:6px}.instrument{grid-template-rows:185px minmax(0,1fr)}.control-panel{grid-template-columns:105px 1fr 90px;padding:10px;gap:9px}.speaker{height:45px}.button-banks{grid-template-columns:1fr}.button-banks fieldset:first-child{display:none}.bank.tones{grid-template-columns:repeat(3,1fr)}.sliders{gap:7px}.chiclet{min-height:30px}.master{padding-left:8px}.readout{font-size:10px}.key-label{font-size:9px}.note-label{display:none}.logo{font-size:26px}}
     @media(max-width:560px){.topline{display:none}.app{grid-template-rows:1fr}.instrument{grid-template-rows:155px 1fr}.control-panel{grid-template-columns:75px 1fr 68px}.speaker,.model{display:none}.brand{justify-content:center}.logo{font-size:21px}.sliders{grid-template-columns:1fr}.slider:not(:first-child){display:none}.bank.tones{grid-template-columns:repeat(3,1fr)}.chiclet{font-size:7px}.master .row:first-child{display:none}.readout{padding:6px 3px;writing-mode:vertical-rl;height:90px;margin:auto}.key-label{display:none}}
   </style>
+  <style>
+    /* Reference-faithful 8-bit redraw */
+    :root{--case:#ded5bf;--case-light:#f0e8d5;--case-dark:#a99e86;--line:#4b463d;--orange:#e85b28;--yellow:#e9a03a}
+    html,body{background:#22160e;image-rendering:pixelated}
+    body{background:
+      linear-gradient(90deg,transparent 0 7%,#392013 7% 13%,transparent 13% 28%,#6b3d22 28% 35%,transparent 35% 68%,#7b4a29 68% 75%,transparent 75%),
+      linear-gradient(0deg,transparent 0 18%,#352116 18% 23%,transparent 23% 62%,#6d4127 62% 69%,transparent 69%),
+      repeating-linear-gradient(45deg,#6f5737 0 3px,#7d6240 3px 6px,#5e482f 6px 9px,#806745 9px 12px)}
+    body:after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;background:repeating-linear-gradient(0deg,#0000 0 3px,#100900 3px 4px)}
+    .app{display:grid;place-items:center;height:100%;padding:3.2vw 2vw 2.7vw}
+    .topline{position:fixed;z-index:15;right:14px;top:12px;padding:0;justify-content:flex-end}.topline .status{display:none}.utility{gap:6px}.utility button{font-family:monospace;font-weight:900;background:#20150e;color:#f1dbab;border:2px solid #0d0805;border-radius:0;box-shadow:3px 3px 0 #0d0805;padding:7px 9px;font-size:10px}.utility button:active{transform:translate(3px,3px);box-shadow:none}
+    .instrument{width:min(96vw,1500px);height:min(76vh,520px);min-height:355px;display:grid;grid-template-rows:37% 63%;border-radius:0;overflow:visible;border:4px solid #302b24;background:var(--case);box-shadow:0 8px 0 #6f6656,0 14px 0 #352f27,14px 24px 0 #160e09;transform:perspective(1200px) rotateX(1deg);clip-path:polygon(1.2% 0,98.2% 1%,100% 96%,99% 100%,0 98%)}
+    .instrument:before{content:"";position:absolute;inset:7px 9px auto;height:5px;background:#fff7e5;opacity:.8;z-index:10}
+    .control-panel{display:grid;grid-template-columns:17% 58% 25%;gap:0;padding:12px 14px 7px 20px;border:0;border-bottom:4px solid #716957;background:linear-gradient(#eee6d4,#d7cdb7);box-shadow:inset 0 -7px #c0b59d}
+    .brand{border:0;border-right:2px solid #9a917f;padding:0 16px 5px 4px;justify-content:center;align-items:center}.logo{font-family:Arial Black,Arial,sans-serif;font-style:italic;font-size:clamp(24px,3.2vw,48px);letter-spacing:-.09em;text-shadow:2px 2px 0 #a89d86}.model{display:none}.brand .speaker{display:none}
+    .controls{padding:2px 16px;grid-template-rows:40% 60%;gap:3px}.sliders{gap:20px;align-items:center}.slider{position:relative}.slider label,.control-group legend{display:block;font:900 clamp(7px,.65vw,10px) monospace;letter-spacing:0;text-align:center;color:#3c382f}.slider input{height:10px;appearance:none;background:#5b554a;border:2px solid #918672;border-radius:0;box-shadow:inset 0 2px #1b1814}.slider input::-webkit-slider-thumb{appearance:none;width:30px;height:15px;background:repeating-linear-gradient(90deg,#c9bd9e 0 3px,#776e5c 3px 4px);border:2px solid #655c4c;box-shadow:2px 2px 0 #3d372e}
+    .button-banks{gap:22px;align-items:end}.bank{gap:4px;margin-top:4px}.bank.tones{gap:3px}.chiclet{min-height:27px;height:clamp(27px,4vh,38px);border:2px solid #6e4b20;border-radius:0;background:linear-gradient(#f3ae45 0 75%,#a85a20 75%);box-shadow:2px 3px 0 #58452c;color:#2e271d;font:900 clamp(6px,.58vw,9px) monospace;padding:2px}.chiclet:nth-child(-n+4){background:linear-gradient(#ef7940 0 75%,#a73b1f 75%)}.chiclet.active{transform:translate(2px,2px);box-shadow:none;background:linear-gradient(#ffcf64 0 75%,#ca6824 75%)}
+    .master{border:0;border-left:2px solid #9a917f;padding:2px 9px 4px 16px;display:grid;grid-template-columns:1fr .85fr;grid-template-rows:1fr 1fr;column-gap:10px}.master .row{font:900 8px monospace;align-self:center}.master .row:first-child{grid-column:1}.master .row:last-child{grid-column:2;grid-row:1 / 3;flex-direction:column;justify-content:center}.master .row:last-child span{font-size:7px}.master .led{width:8px;height:8px}.power{width:34px;height:28px;border:3px solid #4e493f;border-radius:0;box-shadow:2px 2px 0 #8b806c}.power:after{width:12px;inset:2px auto 2px 2px}.power.on:after{transform:translateX(13px)}.readout{grid-column:1;grid-row:2;background:#e8dfcb;color:#413a30;border:0;border-top:2px solid #9d927c;box-shadow:none;padding:5px 1px;text-align:left;font-size:clamp(8px,.8vw,11px)}
+    .lower-deck{display:grid;grid-template-columns:17.2% 82.8%;min-height:0;background:var(--case)}
+    .lower-speaker{margin:0 5px 12px 9px;border:2px solid #807765;background:repeating-linear-gradient(0deg,#a69c88 0 3px,#e0d6c0 3px 6px);box-shadow:inset 0 4px #c0b59f;position:relative}
+    .lower-speaker:before{content:"";position:absolute;inset:8px;background:repeating-linear-gradient(0deg,#776f60 0 2px,transparent 2px 6px)}
+    .keyboard{padding:0 8px 12px 0;background:linear-gradient(#908572 0 6px,#d4c9b1 6px);overflow:visible}
+    .key{border-color:#6a6255;border-width:2px 1px 2px}.key.white{background:linear-gradient(90deg,#d3cbbc 0 5%,#fffaf0 12% 82%,#c8bfaf 94%);border-radius:0;box-shadow:inset 0 -6px #c5bcac,2px 4px 0 #635c50}.key.white.active{background:linear-gradient(#f6b94d,#ffd376);transform:translateY(3px)}.key.black{height:58%;width:clamp(18px,2.6%,39px);border:2px solid #080706;border-radius:0;background:linear-gradient(90deg,#0a0908 0 17%,#342f2a 18% 70%,#070706 72%);box-shadow:inset 0 -7px #050404,3px 4px 0 #625b50}.key.black.active{background:linear-gradient(#9a4724,#e36d30)}
+    .key-label{bottom:11px;color:#8c8374;font-size:clamp(7px,.7vw,10px)}.black .key-label{bottom:7px;color:#d7cbb7}.note-label{display:none}
+    .start-overlay{display:none}
+    @media(max-aspect-ratio:1/1){.app{padding:2vh 2vw}.instrument{width:96vw;height:74vh;min-height:430px;grid-template-rows:42% 58%}.control-panel{grid-template-columns:20% 58% 22%;padding:10px 8px}.lower-deck{grid-template-columns:20.2% 79.8%}.controls{padding:2px 7px}.button-banks{gap:6px;grid-template-columns:1fr}.button-banks fieldset:first-child{display:none}.bank.tones{grid-template-columns:repeat(3,1fr)}.master{padding-left:7px;grid-template-columns:1fr}.master .row:last-child{grid-column:1;grid-row:1}.readout{grid-column:1;grid-row:2}.logo{font-size:20px}.slider:not(:first-child){display:none}.sliders{grid-template-columns:1fr}.key-label{display:none}}
+  </style>
 </head>
 <body>
   <main class="app">
@@ -49,7 +76,7 @@
         </div>
         <div class="master"><div class="row"><span>Main volume</span><span class="led on"></span></div><div id="readout" class="readout">PIANO · C4</div><div class="row"><span>Off</span><button id="power" class="power on" aria-label="Power" aria-pressed="true"></button><span>On</span></div></div>
       </div>
-      <div id="keyboard" class="keyboard" aria-label="Piano keyboard"></div>
+      <div class="lower-deck"><div class="lower-speaker" aria-label="Built-in speaker"></div><div id="keyboard" class="keyboard" aria-label="Piano keyboard"></div></div>
     </section>
   </main>
   <div id="startOverlay" class="start-overlay"><div class="start-card"><div class="mini-logo">CASIO</div><p>A pocket-sized home keyboard, rebuilt for your browser. Play with your computer keyboard, pointer, or a connected MIDI controller.</p><button id="startBtn">Power on</button><small>Computer keys: Z–M and Q–U · MIDI connects automatically</small></div></div>
